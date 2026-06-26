@@ -31,3 +31,5 @@ results/*.txt
 # Keep only code
 # Don't ignore: *.py, config.py, requirements.txt
 EOF
+
+commands.txt
