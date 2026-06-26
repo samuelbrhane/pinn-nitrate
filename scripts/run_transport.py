@@ -20,11 +20,11 @@ if __name__ == "__main__":
         num_layers=config.NUM_LAYERS
     ).to(config.DEVICE)
     
-    print(f"✓ Model created")
+    print(f"Model created")
     
     loss_fn = PINNLoss()
     model = train_transport(model, train_loader, val_loader, loss_fn, epochs=config.EPOCHS_STAGE1)
     
     os.makedirs(config.MODEL_DIR, exist_ok=True)
     torch.save(model.state_dict(), f"{config.MODEL_DIR}/transport_final.pt")
-    print(f"✓ Transport training complete!")
+    print(f"Transport training complete!")
