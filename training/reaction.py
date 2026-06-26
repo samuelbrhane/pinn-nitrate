@@ -10,14 +10,12 @@ def train_reaction(model, train_loader, val_loader, loss_fn, epochs=20000):
     print(f"Reaction Training (20k epochs)")
     print(f"{'='*60}\n")
     
-    # Freeze transport weights
     for name, param in model.named_parameters():
         if 'network.0' in name or 'network.1' in name:
             param.requires_grad = False
     
     optimizer = optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
     
-    # Track losses for plotting
     loss_history = {
         'epochs': [],
         'train_loss': [],
@@ -29,7 +27,7 @@ def train_reaction(model, train_loader, val_loader, loss_fn, epochs=20000):
         num_batches = 0
         for X_batch, Y_batch in train_loader:
             y_pred = model(X_batch)
-            loss, loss_dict = loss_fn(y_pred, Y_batch, epoch, is_stage1=False)
+            loss, _ = loss_fn(X_batch, y_pred, Y_batch, epoch)
             
             optimizer.zero_grad()
             loss.backward()
@@ -46,13 +44,12 @@ def train_reaction(model, train_loader, val_loader, loss_fn, epochs=20000):
             with torch.no_grad():
                 for X_val, Y_val in val_loader:
                     y_pred_val = model(X_val)
-                    loss_val, _ = loss_fn(y_pred_val, Y_val, epoch, is_stage1=False)
+                    loss_val, _ = loss_fn(X_val, y_pred_val, Y_val, epoch)
                     val_loss_total += loss_val.item()
                     num_val_batches += 1
             
             avg_val_loss = val_loss_total / num_val_batches
             
-            # Record loss
             loss_history['epochs'].append(epoch)
             loss_history['train_loss'].append(avg_train_loss)
             loss_history['val_loss'].append(avg_val_loss)
@@ -63,7 +60,6 @@ def train_reaction(model, train_loader, val_loader, loss_fn, epochs=20000):
             os.makedirs(config.MODEL_DIR, exist_ok=True)
             torch.save(model.state_dict(), f"{config.MODEL_DIR}/reaction_epoch{epoch}.pt")
     
-    # Save loss history
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     with open(f"{config.RESULTS_DIR}/reaction_loss.json", 'w') as f:
         json.dump(loss_history, f, indent=2)
