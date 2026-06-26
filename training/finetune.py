@@ -1,7 +1,10 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import torch
 import torch.optim as optim
 import config
-import os
 import json
 
 def train_finetune(model, train_loader, val_loader, loss_fn, epochs=10000):
@@ -26,7 +29,11 @@ def train_finetune(model, train_loader, val_loader, loss_fn, epochs=10000):
         num_batches = 0
         for X_batch, Y_batch in train_loader:
             y_pred = model(X_batch)
-            loss, _ = loss_fn(X_batch, y_pred, Y_batch, epoch, compute_pde=True)
+            
+            x_colloc = torch.rand(config.N_COLLOCATION, 3, device=config.DEVICE) * 100
+            x_colloc[:, 2] = 0.5
+            
+            loss, _ = loss_fn(X_batch, y_pred, Y_batch, x_colloc, epoch, compute_pde=True)
             
             optimizer.zero_grad()
             loss.backward()
@@ -43,7 +50,8 @@ def train_finetune(model, train_loader, val_loader, loss_fn, epochs=10000):
             with torch.no_grad():
                 for X_val, Y_val in val_loader:
                     y_pred_val = model(X_val)
-                    loss_val, _ = loss_fn(X_val, y_pred_val, Y_val, epoch, compute_pde=False)
+                    x_colloc_dummy = torch.zeros(1, 3, device=config.DEVICE)
+                    loss_val, _ = loss_fn(X_val, y_pred_val, Y_val, x_colloc_dummy, epoch, compute_pde=False)
                     val_loss_total += loss_val.item()
                     num_val_batches += 1
             
