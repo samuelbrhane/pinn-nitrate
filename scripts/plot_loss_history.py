@@ -29,7 +29,7 @@ def plot_transport_loss(loss_file='results/transport_loss.json'):
     plt.grid(True)
     plt.tight_layout()
     plt.savefig('plots/transport_convergence.png', dpi=300, bbox_inches='tight')
-    print("✓ Saved: plots/transport_convergence.png")
+    print("Saved: plots/transport_convergence.png")
     plt.close()
 
 def plot_reaction_loss(loss_file='results/reaction_loss.json'):
@@ -55,7 +55,7 @@ def plot_reaction_loss(loss_file='results/reaction_loss.json'):
     plt.grid(True)
     plt.tight_layout()
     plt.savefig('plots/reaction_convergence.png', dpi=300, bbox_inches='tight')
-    print("✓ Saved: plots/reaction_convergence.png")
+    print("Saved: plots/reaction_convergence.png")
     plt.close()
 
 def plot_finetune_loss(loss_file='results/finetune_loss.json'):
@@ -81,7 +81,7 @@ def plot_finetune_loss(loss_file='results/finetune_loss.json'):
     plt.grid(True)
     plt.tight_layout()
     plt.savefig('plots/finetune_convergence.png', dpi=300, bbox_inches='tight')
-    print("✓ Saved: plots/finetune_convergence.png")
+    print("Saved: plots/finetune_convergence.png")
     plt.close()
 
 def plot_all_stages():
@@ -116,7 +116,7 @@ def plot_all_stages():
     
     plt.tight_layout()
     plt.savefig('plots/all_stages_convergence.png', dpi=300, bbox_inches='tight')
-    print("✓ Saved: plots/all_stages_convergence.png")
+    print("Saved: plots/all_stages_convergence.png")
     plt.close()
 
 if __name__ == "__main__":
@@ -129,4 +129,4 @@ if __name__ == "__main__":
     plot_finetune_loss()
     plot_all_stages()
     
-    print(f"\n✓ All loss plots saved to plots/")
+    print(f"\nAll loss plots saved to plots/")
