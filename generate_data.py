@@ -47,7 +47,7 @@ def generate_benchmark(bench_num, n_spatial=100, n_temporal=100):
             })
     
     df = pd.DataFrame(data)
-    filename = f'data/benchmark{bench_num}.csv'
+    filename = f'data/synthetic/benchmark{bench_num}.csv'
     df.to_csv(filename, index=False)
     print(f"Benchmark {bench_num}: {len(df)} points → {filename}")
     return df
