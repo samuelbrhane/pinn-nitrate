@@ -61,7 +61,7 @@ def plot_reaction_loss(loss_file='results/reaction_loss.json'):
 def plot_finetune_loss(loss_file='results/finetune_loss.json'):
     """Plot fine-tune (Stage 3) loss convergence"""
     if not os.path.exists(loss_file):
-        print(f"✗ {loss_file} not found")
+        print(f"{loss_file} not found")
         return
     
     with open(loss_file, 'r') as f:
@@ -96,7 +96,7 @@ def plot_all_stages():
     
     for loss_file, stage_name, ax in stages:
         if not os.path.exists(loss_file):
-            print(f"⚠ {loss_file} not found, skipping")
+            print(f"{loss_file} not found, skipping")
             continue
         
         with open(loss_file, 'r') as f:
