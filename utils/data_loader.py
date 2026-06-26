@@ -15,10 +15,11 @@ class DataHandler:
     def load_and_normalize(self):
         """Load data and normalize"""
         df = pd.read_csv(self.filepath)
-        print(f"✓ Loaded {len(df)} points from benchmark {self.benchmark_num}")
+        print(f"Loaded {len(df)} points from benchmark {self.benchmark_num}")
         
         # Input: x, t, u
         X = df[['x', 't', 'u']].values
+        
         # Output: NO3, DOC, Fe2+, N2
         Y = df[['NO3', 'DOC', 'Fe2+', 'N2']].values
         
@@ -65,6 +66,6 @@ class DataHandler:
         val_loader = DataLoader(val_dataset, batch_size=config.BATCH_SIZE, shuffle=False)
         test_loader = DataLoader(test_dataset, batch_size=config.BATCH_SIZE, shuffle=False)
         
-        print(f"✓ Train: {len(X_train)}, Val: {len(X_val)}, Test: {len(X_test)}")
+        print(f"Train: {len(X_train)}, Val: {len(X_val)}, Test: {len(X_test)}")
         
         return train_loader, val_loader, test_loader, self.scaler_X, self.scaler_Y
