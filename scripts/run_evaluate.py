@@ -6,14 +6,12 @@ import torch
 import config
 from models.network import PINN
 from utils.data_loader import DataHandler
-from utils.losses import PINNLoss
 from utils.metrics import calculate_metrics
 import json
 import numpy as np
 
-
 def full_evaluation(model, test_loader, scaler_Y, method_name="ST-PINN"):
-    """Full evaluation with denormalization"""
+    """Evaluate model on test set with denormalization and metrics"""
     print(f"\n{'='*60}")
     print(f"EVALUATION: {method_name}")
     print(f"{'='*60}\n")
@@ -32,11 +30,9 @@ def full_evaluation(model, test_loader, scaler_Y, method_name="ST-PINN"):
     y_true = np.vstack(all_y_true)
     y_pred = np.vstack(all_y_pred)
     
-    # Denormalize
     y_true_denorm = scaler_Y.inverse_transform(y_true)
     y_pred_denorm = scaler_Y.inverse_transform(y_pred)
     
-    # Calculate metrics
     metrics = calculate_metrics(y_true, y_pred, y_true_denorm, y_pred_denorm)
     
     print(f"\nOverall Metrics:")
@@ -74,7 +70,4 @@ if __name__ == "__main__":
     model.load_state_dict(torch.load(f"{config.MODEL_DIR}/pinn_final.pt"))
     print(f"Loaded ST-PINN final model")
     
-    loss_fn = PINNLoss(model, config.DEVICE)
-    
-    # Evaluate
     metrics = full_evaluation(model, test_loader, scaler_Y, method_name="ST-PINN")
