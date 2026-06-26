@@ -1,0 +1,33 @@
+cat > .gitignore << 'EOF'
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Data & Models
+*.csv
+data/benchmark*.csv
+models/*.pt
+results/*.json
+results/*.txt
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+*.log
+
+# Keep only code
+# Don't ignore: *.py, config.py, requirements.txt
+EOF
