@@ -36,16 +36,17 @@ def run_benchmark(benchmark_num):
     
     print(f"Updated config: BENCHMARK = {benchmark_num}\n")
     
-    # Training stages (skip if final model exists)
+    # Training stages (skip if final model exists in benchmark folder)
+    benchmark_model_dir = f"models/benchmark{benchmark_num}"
     training_stages = [
-        ('python scripts/run_transport.py', 'Transport (Stage 1)', 'transport_final.pt'),
-        ('python scripts/run_reaction.py', 'Reaction (Stage 2)', 'reaction_final.pt'),
-        ('python scripts/run_finetune.py', 'Fine-tune (Stage 3)', 'finetune_final.pt'),
-        ('python scripts/run_baseline.py', 'Baseline Training', 'baseline_final.pt'),
+        ('python scripts/run_transport.py', 'Transport (Stage 1)', f'{benchmark_model_dir}/transport_final.pt'),
+        ('python scripts/run_reaction.py', 'Reaction (Stage 2)', f'{benchmark_model_dir}/reaction_final.pt'),
+        ('python scripts/run_finetune.py', 'Fine-tune (Stage 3)', f'{benchmark_model_dir}/finetune_final.pt'),
+        ('python scripts/run_baseline.py', 'Baseline Training', f'{benchmark_model_dir}/baseline_final.pt'),
     ]
     
     for cmd, desc, final_model in training_stages:
-        if os.path.exists(f"models/{final_model}"):
+        if os.path.exists(final_model):
             print(f"{desc} already complete, skipping...")
             continue
         if not run_command(cmd, desc):
@@ -65,7 +66,7 @@ if __name__ == "__main__":
     
     success_count = 0
     
-    for benchmark in range(1, 2):
+    for benchmark in range(1, 5):
         if not run_benchmark(benchmark):
             print(f"\nStopped at Benchmark {benchmark}. Re-run script to continue.\n")
             break

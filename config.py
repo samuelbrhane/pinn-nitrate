@@ -33,6 +33,6 @@ OPTIMIZER = "Adam"  # Stage 1, 2
 OPTIMIZER_STAGE3 = "LBFGS"
 
 # Directories
-MODEL_DIR = "models"
-RESULTS_DIR = "results"
-PLOTS_DIR = "plots"
+MODEL_DIR = f"models/benchmark{BENCHMARK}"
+RESULTS_DIR = f"results/benchmark{BENCHMARK}"
+PLOTS_DIR = f"plots/benchmark{BENCHMARK}"
