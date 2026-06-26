@@ -6,12 +6,15 @@ import torch
 import torch.optim as optim
 import config
 import json
+import time
 
 def train_transport(model, train_loader, val_loader, loss_fn, epochs=20000):
-    """Transport Training: Train movement/advection-dispersion component with checkpoint resume"""
+    """Transport Training with timing"""
     print(f"\n{'='*60}")
     print(f"Transport Training (20k epochs)")
     print(f"{'='*60}\n")
+    
+    start_time = time.time()
     
     optimizer = optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
     start_epoch = 0
@@ -80,15 +83,30 @@ def train_transport(model, train_loader, val_loader, loss_fn, epochs=20000):
                 'loss_history': loss_history
             }, checkpoint_path)
     
+    total_time = time.time() - start_time
+    
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     with open(f"{config.RESULTS_DIR}/transport_loss.json", 'w') as f:
         json.dump(loss_history, f, indent=2)
+    
+    # Save timing info
+    timing_info = {
+        'stage': 'transport',
+        'epochs_trained': epochs - start_epoch,
+        'time_seconds': total_time,
+        'time_minutes': total_time / 60,
+        'time_hours': total_time / 3600
+    }
+    with open(f"{config.RESULTS_DIR}/transport_timing.json", 'w') as f:
+        json.dump(timing_info, f, indent=2)
     
     # Save final model
     os.makedirs(config.MODEL_DIR, exist_ok=True)
     torch.save(model.state_dict(), f"{config.MODEL_DIR}/transport_final.pt")
     
     print(f"\nTransport training complete!")
+    print(f"Time: {total_time/60:.1f} min ({total_time/3600:.2f} hours)")
     print(f"Loss history saved to {config.RESULTS_DIR}/transport_loss.json")
+    print(f"Timing saved to {config.RESULTS_DIR}/transport_timing.json")
     
     return model

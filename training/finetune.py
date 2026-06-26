@@ -6,12 +6,15 @@ import torch
 import torch.optim as optim
 import config
 import json
+import time
 
 def train_finetune(model, train_loader, val_loader, loss_fn, epochs=10000):
-    """Fine-tune Training: Unfreeze all weights with checkpoint resume"""
+    """Fine-tune Training with timing"""
     print(f"\n{'='*60}")
     print(f"Fine-tune Training (10k epochs)")
     print(f"{'='*60}\n")
+    
+    start_time = time.time()
     
     for param in model.parameters():
         param.requires_grad = True
@@ -83,15 +86,30 @@ def train_finetune(model, train_loader, val_loader, loss_fn, epochs=10000):
                 'loss_history': loss_history
             }, checkpoint_path)
     
+    total_time = time.time() - start_time
+    
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     with open(f"{config.RESULTS_DIR}/finetune_loss.json", 'w') as f:
         json.dump(loss_history, f, indent=2)
+    
+    # Save timing info
+    timing_info = {
+        'stage': 'finetune',
+        'epochs_trained': epochs - start_epoch,
+        'time_seconds': total_time,
+        'time_minutes': total_time / 60,
+        'time_hours': total_time / 3600
+    }
+    with open(f"{config.RESULTS_DIR}/finetune_timing.json", 'w') as f:
+        json.dump(timing_info, f, indent=2)
     
     # Save final model
     os.makedirs(config.MODEL_DIR, exist_ok=True)
     torch.save(model.state_dict(), f"{config.MODEL_DIR}/finetune_final.pt")
     
     print(f"\nFine-tune training complete!")
+    print(f"Time: {total_time/60:.1f} min ({total_time/3600:.2f} hours)")
     print(f"Loss history saved to {config.RESULTS_DIR}/finetune_loss.json")
+    print(f"Timing saved to {config.RESULTS_DIR}/finetune_timing.json")
     
     return model

@@ -6,15 +6,18 @@ import torch
 import torch.optim as optim
 import config
 import json
+import time
 from models.network import PINN
 from utils.data_loader import DataHandler
 from utils.losses import PINNLoss
 
 def train_baseline(model, train_loader, val_loader, loss_fn, epochs=50000):
-    """Baseline PINN: Standard end-to-end training with checkpoint resume"""
+    """Baseline PINN: Standard end-to-end training with timing"""
     print(f"\n{'='*60}")
     print(f"Baseline PINN: Standard Training (50k epochs)")
     print(f"{'='*60}\n")
+    
+    start_time = time.time()
     
     optimizer = optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
     start_epoch = 0
@@ -83,16 +86,31 @@ def train_baseline(model, train_loader, val_loader, loss_fn, epochs=50000):
                 'loss_history': loss_history
             }, checkpoint_path)
     
+    total_time = time.time() - start_time
+    
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     with open(f"{config.RESULTS_DIR}/baseline_loss.json", 'w') as f:
         json.dump(loss_history, f, indent=2)
+    
+    # Save timing info
+    timing_info = {
+        'stage': 'baseline',
+        'epochs_trained': epochs - start_epoch,
+        'time_seconds': total_time,
+        'time_minutes': total_time / 60,
+        'time_hours': total_time / 3600
+    }
+    with open(f"{config.RESULTS_DIR}/baseline_timing.json", 'w') as f:
+        json.dump(timing_info, f, indent=2)
     
     # Save final model
     os.makedirs(config.MODEL_DIR, exist_ok=True)
     torch.save(model.state_dict(), f"{config.MODEL_DIR}/baseline_final.pt")
     
     print(f"\nBaseline training complete!")
+    print(f"Time: {total_time/60:.1f} min ({total_time/3600:.2f} hours)")
     print(f"Loss history saved to {config.RESULTS_DIR}/baseline_loss.json")
+    print(f"Timing saved to {config.RESULTS_DIR}/baseline_timing.json")
     
     return model
 
