@@ -1,10 +1,14 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import torch
 import config
 from models.network import PINN
 from utils.data_loader import DataHandler
 from utils.losses import PINNLoss
 from training.transport import train_transport
-import os
+
 
 if __name__ == "__main__":
     print(f"Device: {config.DEVICE}")
@@ -22,7 +26,7 @@ if __name__ == "__main__":
     
     print(f"Model created")
     
-    loss_fn = PINNLoss()
+    loss_fn = PINNLoss(model, config.DEVICE)
     model = train_transport(model, train_loader, val_loader, loss_fn, epochs=config.EPOCHS_STAGE1)
     
     os.makedirs(config.MODEL_DIR, exist_ok=True)

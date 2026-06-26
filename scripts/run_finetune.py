@@ -24,7 +24,7 @@ if __name__ == "__main__":
     model.load_state_dict(torch.load(f"{config.MODEL_DIR}/reaction_final.pt"))
     print(f"Loaded reaction weights")
     
-    loss_fn = PINNLoss()
+    loss_fn = PINNLoss(model, config.DEVICE)
     model = train_finetune(model, train_loader, val_loader, loss_fn, epochs=config.EPOCHS_STAGE3)
     
     os.makedirs(config.MODEL_DIR, exist_ok=True)

@@ -62,7 +62,7 @@ if __name__ == "__main__":
     
     print(f"Model created")
     
-    loss_fn = PINNLoss()
+    loss_fn = PINNLoss(model, config.DEVICE)
     model = train_baseline(model, train_loader, val_loader, loss_fn, epochs=50000)
     
     os.makedirs(config.MODEL_DIR, exist_ok=True)

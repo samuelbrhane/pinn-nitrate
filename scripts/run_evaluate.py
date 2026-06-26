@@ -70,7 +70,7 @@ if __name__ == "__main__":
     model.load_state_dict(torch.load(f"{config.MODEL_DIR}/pinn_final.pt"))
     print(f"Loaded ST-PINN final model")
     
-    loss_fn = PINNLoss()
+    loss_fn = PINNLoss(model, config.DEVICE)
     
     # Evaluate
     metrics = full_evaluation(model, test_loader, scaler_Y, method_name="ST-PINN")
