@@ -6,7 +6,7 @@ import os
 def train_stage1(model, train_loader, val_loader, loss_fn, epochs=20000):
     """Stage 1: Train transport component"""
     print(f"\n{'='*60}")
-    print(f"STAGE 1: Transport Training (20k epochs)")
+    print(f"Transport Training (20k epochs)")
     print(f"{'='*60}\n")
     
     optimizer = optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
@@ -43,5 +43,5 @@ def train_stage1(model, train_loader, val_loader, loss_fn, epochs=20000):
             os.makedirs(config.MODEL_DIR, exist_ok=True)
             torch.save(model.state_dict(), f"{config.MODEL_DIR}/stage1_epoch{epoch}.pt")
     
-    print(f"\n✓ Stage 1 complete!")
+    print(f"\nTransport complete!")
     return model
