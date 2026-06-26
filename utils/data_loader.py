@@ -69,3 +69,10 @@ class DataHandler:
         print(f"Train: {len(X_train)}, Val: {len(X_val)}, Test: {len(X_test)}")
         
         return train_loader, val_loader, test_loader, self.scaler_X, self.scaler_Y
+    
+    
+    def get_collocation_points(self, n_collocation=1200):
+        """Get random collocation points"""
+        from utils.collocation import CollocationPointGenerator
+        gen = CollocationPointGenerator(n_collocation=n_collocation)
+        return gen.generate()
