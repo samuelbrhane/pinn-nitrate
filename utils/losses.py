@@ -60,7 +60,7 @@ class PINNLoss(nn.Module):
         """Enforce boundary conditions at x=0 and x=100"""
         return self.mse(y_pred_bc, y_true_bc)
     
-    def forward(self, x, y_pred, y_true, epoch, is_stage1=False):
+    def forward(self, x, y_pred, y_true, epoch):
         """Compute total weighted loss with dynamic loss weighting"""
         loss_data = self.data_loss(y_pred, y_true)
         loss_pde = self.pde_residual(x)
