@@ -1,27 +1,21 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import torch
 import pandas as pd
-import numpy as np
-from torch.utils.data import TensorDataset, DataLoader
-from sklearn.preprocessing import MinMaxScaler
 import config
+from sklearn.preprocessing import MinMaxScaler
+from torch.utils.data import TensorDataset, DataLoader
 
 class DataHandler:
-    def __init__(self, benchmark_num=1, data_source='synthetic'):
-        """Load data from synthetic or PHREEQC source"""
+    def __init__(self, benchmark_num=1):
+        """Load PHREEQC data"""
         self.benchmark_num = benchmark_num
-        self.data_source = data_source
-        
-        if data_source == 'synthetic':
-            self.filepath = f"data/synthetic/benchmark{benchmark_num}.csv"
-        elif data_source == 'phreeqc':
-            self.filepath = f"data/phreeqc/benchmark{benchmark_num}.csv"
-        else:
-            raise ValueError("data_source must be 'synthetic' or 'phreeqc'")
-        
+        self.filepath = f"data/phreeqc/benchmark{benchmark_num}.csv"
         self.scaler_X = MinMaxScaler()
         self.scaler_Y = MinMaxScaler()
-        
-        
+    
     def load_and_normalize(self):
         """Load data and normalize"""
         df = pd.read_csv(self.filepath)
@@ -79,7 +73,6 @@ class DataHandler:
         print(f"Train: {len(X_train)}, Val: {len(X_val)}, Test: {len(X_test)}")
         
         return train_loader, val_loader, test_loader, self.scaler_X, self.scaler_Y
-    
     
     def get_collocation_points(self, n_collocation=1200):
         """Get random collocation points"""
