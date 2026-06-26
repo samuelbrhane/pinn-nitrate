@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import torch
 import config
 from models.network import PINN
@@ -6,7 +10,7 @@ from utils.losses import PINNLoss
 from utils.metrics import calculate_metrics
 import json
 import numpy as np
-import os
+
 
 def full_evaluation(model, test_loader, scaler_Y, method_name="ST-PINN"):
     """Full evaluation with denormalization"""

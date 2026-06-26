@@ -1,10 +1,14 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import torch
 import config
 from models.network import PINN
 from utils.data_loader import DataHandler
 from utils.losses import PINNLoss
 from training.finetune import train_finetune
-import os
+
 
 if __name__ == "__main__":
     print(f"Device: {config.DEVICE}")

@@ -1,10 +1,14 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import torch
 import torch.optim as optim
 import config
 from models.network import PINN
 from utils.data_loader import DataHandler
 from utils.losses import PINNLoss
-import os
+
 
 def train_baseline(model, train_loader, val_loader, loss_fn, epochs=50000):
     """Baseline: Standard PINN (all at once, no DLW)"""

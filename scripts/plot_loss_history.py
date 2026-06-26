@@ -1,7 +1,10 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import json
 import matplotlib.pyplot as plt
 import seaborn as sns
-import os
 import config
 
 sns.set_style('whitegrid')
