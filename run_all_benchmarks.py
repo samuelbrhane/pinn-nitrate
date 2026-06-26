@@ -66,7 +66,7 @@ if __name__ == "__main__":
     
     success_count = 0
     
-    for benchmark in range(1, 5):
+    for benchmark in range(1, 3):
         if not run_benchmark(benchmark):
             print(f"\nStopped at Benchmark {benchmark}. Re-run script to continue.\n")
             break
