@@ -8,7 +8,7 @@ import config
 import json
 
 def train_reaction(model, train_loader, val_loader, loss_fn, epochs=20000):
-    """Reaction Training: Train chemistry/reaction component (transport frozen)"""
+    """Reaction Training: Train chemistry/reaction component with checkpoint resume"""
     print(f"\n{'='*60}")
     print(f"Reaction Training (20k epochs)")
     print(f"{'='*60}\n")
@@ -18,14 +18,24 @@ def train_reaction(model, train_loader, val_loader, loss_fn, epochs=20000):
             param.requires_grad = False
     
     optimizer = optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
-    
+    start_epoch = 0
     loss_history = {
         'epochs': [],
         'train_loss': [],
         'val_loss': []
     }
     
-    for epoch in range(epochs):
+    # Check for checkpoint
+    checkpoint_path = f"{config.MODEL_DIR}/reaction_latest.pt"
+    if os.path.exists(checkpoint_path):
+        checkpoint = torch.load(checkpoint_path)
+        model.load_state_dict(checkpoint['model'])
+        optimizer.load_state_dict(checkpoint['optimizer'])
+        start_epoch = checkpoint['epoch']
+        loss_history = checkpoint['loss_history']
+        print(f"Resumed from epoch {start_epoch}")
+    
+    for epoch in range(start_epoch, epochs):
         train_loss_total = 0
         num_batches = 0
         for X_batch, Y_batch in train_loader:
@@ -64,13 +74,23 @@ def train_reaction(model, train_loader, val_loader, loss_fn, epochs=20000):
             
             print(f"Epoch {epoch}/{epochs} | Train: {avg_train_loss:.6f} | Val: {avg_val_loss:.6f}")
         
-        if epoch % config.CHECKPOINT_FREQ == 0 and epoch > 0:
+        # Save latest checkpoint every 100 epochs
+        if epoch % 100 == 0 and epoch > 0:
             os.makedirs(config.MODEL_DIR, exist_ok=True)
-            torch.save(model.state_dict(), f"{config.MODEL_DIR}/reaction_epoch{epoch}.pt")
+            torch.save({
+                'model': model.state_dict(),
+                'optimizer': optimizer.state_dict(),
+                'epoch': epoch,
+                'loss_history': loss_history
+            }, checkpoint_path)
     
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     with open(f"{config.RESULTS_DIR}/reaction_loss.json", 'w') as f:
         json.dump(loss_history, f, indent=2)
+    
+    # Save final model
+    os.makedirs(config.MODEL_DIR, exist_ok=True)
+    torch.save(model.state_dict(), f"{config.MODEL_DIR}/reaction_final.pt")
     
     print(f"\nReaction training complete!")
     print(f"Loss history saved to {config.RESULTS_DIR}/reaction_loss.json")
