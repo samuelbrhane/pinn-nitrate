@@ -5,7 +5,7 @@ DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Data
 DATA_DIR = "data"
-BENCHMARK = 1  # Which benchmark (1, 2, 3, 4)
+BENCHMARK = 1
 TRAIN_SPLIT = 0.8
 VAL_SPLIT = 0.1
 TEST_SPLIT = 0.1
