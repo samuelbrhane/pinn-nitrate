@@ -8,10 +8,10 @@ import config
 import json
 import time
 
-def train_finetune(model, train_loader, val_loader, loss_fn, epochs=10000):
-    """Fine-tune Training with timing"""
+def train_finetune(model, train_loader, val_loader, loss_fn, epochs=2000):
+    """Fine-tune Training: PDE computed once per epoch"""
     print(f"\n{'='*60}")
-    print(f"Fine-tune Training (10k epochs)")
+    print(f"Fine-tune Training (2k epochs, PDE per epoch)")
     print(f"{'='*60}\n")
     
     start_time = time.time()
@@ -38,13 +38,14 @@ def train_finetune(model, train_loader, val_loader, loss_fn, epochs=10000):
         print(f"Resumed from epoch {start_epoch}")
     
     for epoch in range(start_epoch, epochs):
+        # Generate collocation points ONCE per epoch
+        x_colloc = torch.rand(config.N_COLLOCATION, 3, device=config.DEVICE) * 100
+        x_colloc[:, 2] = 0.5
+        
         train_loss_total = 0
         num_batches = 0
         for X_batch, Y_batch in train_loader:
             y_pred = model(X_batch)
-            
-            x_colloc = torch.rand(config.N_COLLOCATION, 3, device=config.DEVICE) * 100
-            x_colloc[:, 2] = 0.5
             
             loss, _ = loss_fn(X_batch, y_pred, Y_batch, x_colloc, epoch, compute_pde=True)
             
@@ -57,7 +58,7 @@ def train_finetune(model, train_loader, val_loader, loss_fn, epochs=10000):
         
         avg_train_loss = train_loss_total / num_batches
         
-        if epoch % 100 == 0:
+        if epoch % 200 == 0:
             val_loss_total = 0
             num_val_batches = 0
             with torch.no_grad():
@@ -76,8 +77,8 @@ def train_finetune(model, train_loader, val_loader, loss_fn, epochs=10000):
             
             print(f"Epoch {epoch}/{epochs} | Train: {avg_train_loss:.6f} | Val: {avg_val_loss:.6f}")
         
-        # Save latest checkpoint every 100 epochs
-        if epoch % 100 == 0 and epoch > 0:
+        # Save latest checkpoint every 200 epochs
+        if epoch % 200 == 0 and epoch > 0:
             os.makedirs(config.MODEL_DIR, exist_ok=True)
             torch.save({
                 'model': model.state_dict(),
