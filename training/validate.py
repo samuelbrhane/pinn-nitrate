@@ -16,4 +16,4 @@ def evaluate(model, test_loader, loss_fn):
     
     avg_test_loss = test_loss / len(test_loader)
     print(f"Test Loss: {avg_test_loss:.6f}")
-    print(f"✓ Evaluation complete!")
+    print(f"Evaluation complete!")
