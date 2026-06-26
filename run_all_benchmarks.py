@@ -13,14 +13,14 @@ def run_command(cmd, description):
     if result.returncode != 0:
         print(f"ERROR in {description}!")
         return False
-    print(f"✓ {description} complete!")
+    print(f"{description} complete!")
     return True
 
 def run_benchmark(benchmark_num):
     """Run all stages for one benchmark, skip if already done"""
-    print(f"\n\n{'#'*60}")
-    print(f"# BENCHMARK {benchmark_num}")
-    print(f"{'#'*60}\n")
+    print(f"\n\n{'='*60}")
+    print(f"BENCHMARK {benchmark_num}")
+    print(f"{'='*60}\n")
     
     # Update config.BENCHMARK
     with open('config.py', 'r') as f:
@@ -46,7 +46,7 @@ def run_benchmark(benchmark_num):
     
     for cmd, desc, final_model in training_stages:
         if os.path.exists(f"models/{final_model}"):
-            print(f"✓ {desc} already complete, skipping...")
+            print(f"{desc} already complete, skipping...")
             continue
         if not run_command(cmd, desc):
             print(f"\nStopped at {desc}. Re-run to continue from checkpoint.")
@@ -65,15 +65,15 @@ if __name__ == "__main__":
     
     success_count = 0
     
-    for benchmark in range(1, 5):
+    for benchmark in range(1, 2):
         if not run_benchmark(benchmark):
-            print(f"\n⚠ Stopped at Benchmark {benchmark}. Re-run script to continue.\n")
+            print(f"\nStopped at Benchmark {benchmark}. Re-run script to continue.\n")
             break
         success_count += 1
     
     if success_count == 4:
         print(f"\n{'='*60}")
-        print(f"✓ ALL 4 BENCHMARKS COMPLETE!")
+        print(f"ALL 4 BENCHMARKS COMPLETE!")
         print(f"{'='*60}\n")
     else:
         print(f"\nCompleted: {success_count}/4 benchmarks\n")
