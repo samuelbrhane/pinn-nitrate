@@ -6,11 +6,21 @@ from sklearn.preprocessing import MinMaxScaler
 import config
 
 class DataHandler:
-    def __init__(self, benchmark_num=1):
+    def __init__(self, benchmark_num=1, data_source='synthetic'):
+        """Load data from synthetic or PHREEQC source"""
         self.benchmark_num = benchmark_num
-        self.filepath = f"{config.DATA_DIR}/benchmark{benchmark_num}.csv"
+        self.data_source = data_source
+        
+        if data_source == 'synthetic':
+            self.filepath = f"data/synthetic/benchmark{benchmark_num}.csv"
+        elif data_source == 'phreeqc':
+            self.filepath = f"data/phreeqc/benchmark{benchmark_num}.csv"
+        else:
+            raise ValueError("data_source must be 'synthetic' or 'phreeqc'")
+        
         self.scaler_X = MinMaxScaler()
         self.scaler_Y = MinMaxScaler()
+        
         
     def load_and_normalize(self):
         """Load data and normalize"""
