@@ -26,7 +26,7 @@ def train_finetune(model, train_loader, val_loader, loss_fn, epochs=10000):
         num_batches = 0
         for X_batch, Y_batch in train_loader:
             y_pred = model(X_batch)
-            loss, _ = loss_fn(X_batch, y_pred, Y_batch, epoch)
+            loss, _ = loss_fn(X_batch, y_pred, Y_batch, epoch, compute_pde=True)
             
             optimizer.zero_grad()
             loss.backward()
@@ -43,7 +43,7 @@ def train_finetune(model, train_loader, val_loader, loss_fn, epochs=10000):
             with torch.no_grad():
                 for X_val, Y_val in val_loader:
                     y_pred_val = model(X_val)
-                    loss_val, _ = loss_fn(X_val, y_pred_val, Y_val, epoch)
+                    loss_val, _ = loss_fn(X_val, y_pred_val, Y_val, epoch, compute_pde=False)
                     val_loss_total += loss_val.item()
                     num_val_batches += 1
             
