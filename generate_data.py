@@ -32,7 +32,7 @@ def generate_benchmark(bench_num, n_spatial=100, n_temporal=100):
                 DOC = 200 * np.exp(-0.02 * (x_val/u + t_val))
                 Fe2 = 1 + 10 * (1 - np.exp(-0.012 * (x_val/u + t_val)))
                 
-            else:  # bench_num == 4
+            else: 
                 # Complex dual Monod
                 NO3 = 50 * np.exp(-0.018 * (x_val/u + t_val))
                 DOC = 200 * np.exp(-0.025 * (x_val/u + t_val))
@@ -49,15 +49,14 @@ def generate_benchmark(bench_num, n_spatial=100, n_temporal=100):
     df = pd.DataFrame(data)
     filename = f'data/benchmark{bench_num}.csv'
     df.to_csv(filename, index=False)
-    print(f"✓ Benchmark {bench_num}: {len(df)} points → {filename}")
+    print(f"Benchmark {bench_num}: {len(df)} points → {filename}")
     return df
 
 if __name__ == "__main__":
-    # Create data folder if not exists
     os.makedirs('data', exist_ok=True)
     
     # Generate all 4 benchmarks
     for i in range(1, 5):
         generate_benchmark(i)
     
-    print("\n✓ All benchmarks generated!")
+    print("\nAll benchmarks generated!")
