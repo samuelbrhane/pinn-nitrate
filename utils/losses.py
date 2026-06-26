@@ -60,10 +60,15 @@ class PINNLoss(nn.Module):
         """Enforce boundary conditions at x=0 and x=100"""
         return self.mse(y_pred_bc, y_true_bc)
     
-    def forward(self, x, y_pred, y_true, epoch):
+    def forward(self, x, y_pred, y_true, epoch, compute_pde=True):
         """Compute total weighted loss with dynamic loss weighting"""
         loss_data = self.data_loss(y_pred, y_true)
-        loss_pde = self.pde_residual(x)
+        
+        if compute_pde:
+            loss_pde = self.pde_residual(x)
+        else:
+            loss_pde = torch.tensor(0.0, device=self.device)
+        
         loss_ic = self.ic_loss(y_pred[:100], y_true[:100])
         loss_bc = self.bc_loss(y_pred[::100], y_true[::100])
         
