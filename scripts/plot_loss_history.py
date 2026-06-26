@@ -1,0 +1,132 @@
+import json
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
+import config
+
+sns.set_style('whitegrid')
+
+def plot_transport_loss(loss_file='results/transport_loss.json'):
+    """Plot transport (Stage 1) loss convergence"""
+    if not os.path.exists(loss_file):
+        print(f"✗ {loss_file} not found")
+        return
+    
+    with open(loss_file, 'r') as f:
+        data = json.load(f)
+    
+    epochs = data['epochs']
+    train_loss = data['train_loss']
+    val_loss = data['val_loss']
+    
+    plt.figure(figsize=(10, 6))
+    plt.semilogy(epochs, train_loss, label='Train Loss', linewidth=2)
+    plt.semilogy(epochs, val_loss, label='Val Loss', linewidth=2)
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss (log scale)')
+    plt.title('Stage 1: Transport Training Convergence')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig('plots/transport_convergence.png', dpi=300, bbox_inches='tight')
+    print("✓ Saved: plots/transport_convergence.png")
+    plt.close()
+
+def plot_reaction_loss(loss_file='results/reaction_loss.json'):
+    """Plot reaction (Stage 2) loss convergence"""
+    if not os.path.exists(loss_file):
+        print(f"✗ {loss_file} not found")
+        return
+    
+    with open(loss_file, 'r') as f:
+        data = json.load(f)
+    
+    epochs = data['epochs']
+    train_loss = data['train_loss']
+    val_loss = data['val_loss']
+    
+    plt.figure(figsize=(10, 6))
+    plt.semilogy(epochs, train_loss, label='Train Loss', linewidth=2)
+    plt.semilogy(epochs, val_loss, label='Val Loss', linewidth=2)
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss (log scale)')
+    plt.title('Stage 2: Reaction Training Convergence')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig('plots/reaction_convergence.png', dpi=300, bbox_inches='tight')
+    print("✓ Saved: plots/reaction_convergence.png")
+    plt.close()
+
+def plot_finetune_loss(loss_file='results/finetune_loss.json'):
+    """Plot fine-tune (Stage 3) loss convergence"""
+    if not os.path.exists(loss_file):
+        print(f"✗ {loss_file} not found")
+        return
+    
+    with open(loss_file, 'r') as f:
+        data = json.load(f)
+    
+    epochs = data['epochs']
+    train_loss = data['train_loss']
+    val_loss = data['val_loss']
+    
+    plt.figure(figsize=(10, 6))
+    plt.semilogy(epochs, train_loss, label='Train Loss', linewidth=2)
+    plt.semilogy(epochs, val_loss, label='Val Loss', linewidth=2)
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss (log scale)')
+    plt.title('Stage 3: Fine-tuning Convergence')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig('plots/finetune_convergence.png', dpi=300, bbox_inches='tight')
+    print("✓ Saved: plots/finetune_convergence.png")
+    plt.close()
+
+def plot_all_stages():
+    """Plot all 3 stages in one figure"""
+    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+    
+    stages = [
+        ('results/transport_loss.json', 'Transport', axes[0]),
+        ('results/reaction_loss.json', 'Reaction', axes[1]),
+        ('results/finetune_loss.json', 'Fine-tune', axes[2])
+    ]
+    
+    for loss_file, stage_name, ax in stages:
+        if not os.path.exists(loss_file):
+            print(f"⚠ {loss_file} not found, skipping")
+            continue
+        
+        with open(loss_file, 'r') as f:
+            data = json.load(f)
+        
+        epochs = data['epochs']
+        train_loss = data['train_loss']
+        val_loss = data['val_loss']
+        
+        ax.semilogy(epochs, train_loss, label='Train', linewidth=2)
+        ax.semilogy(epochs, val_loss, label='Val', linewidth=2)
+        ax.set_xlabel('Epoch')
+        ax.set_ylabel('Loss (log scale)')
+        ax.set_title(f'Stage: {stage_name}')
+        ax.legend()
+        ax.grid(True)
+    
+    plt.tight_layout()
+    plt.savefig('plots/all_stages_convergence.png', dpi=300, bbox_inches='tight')
+    print("✓ Saved: plots/all_stages_convergence.png")
+    plt.close()
+
+if __name__ == "__main__":
+    os.makedirs('plots', exist_ok=True)
+    
+    print(f"\nPlotting loss history for benchmark {config.BENCHMARK}...\n")
+    
+    plot_transport_loss()
+    plot_reaction_loss()
+    plot_finetune_loss()
+    plot_all_stages()
+    
+    print(f"\n✓ All loss plots saved to plots/")
