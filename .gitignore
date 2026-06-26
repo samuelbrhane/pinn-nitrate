@@ -17,6 +17,10 @@ ENV/
 # Data & Models
 *.csv
 data/benchmark*.csv
+*.phr
+*.pqi
+data/benchmark*.phr
+data/benchmark*.pqi
 models/*.pt
 results/*.json
 results/*.txt
