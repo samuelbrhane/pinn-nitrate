@@ -9,18 +9,22 @@ import json
 import time
 
 def train_reaction(model, train_loader, val_loader, loss_fn, epochs=5000):
-    """Reaction Training: PDE computed once per epoch"""
+    """Reaction Training: Transport layers with reduced LR, reaction layers with full LR"""
     print(f"\n{'='*60}")
     print(f"Reaction Training (5k epochs, PDE per epoch)")
     print(f"{'='*60}\n")
     
     start_time = time.time()
     
-    for name, param in model.named_parameters():
-        if 'network.0' in name or 'network.1' in name:
-            param.requires_grad = False
+    # Progressive freezing: Reduced learning rate for transport layers
+    transport_params = [p for n, p in model.named_parameters() if 'network.0' in n or 'network.1' in n]
+    reaction_params = [p for n, p in model.named_parameters() if 'network.0' not in n and 'network.1' not in n]
     
-    optimizer = optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
+    optimizer = optim.Adam([
+        {'params': reaction_params, 'lr': config.LEARNING_RATE},
+        {'params': transport_params, 'lr': config.LEARNING_RATE * 0.1}
+    ])
+    
     start_epoch = 0
     loss_history = {
         'epochs': [],

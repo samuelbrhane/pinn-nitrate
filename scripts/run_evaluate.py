@@ -10,6 +10,18 @@ from utils.metrics import calculate_metrics
 import json
 import numpy as np
 
+def convert_to_serializable(obj):
+    """Convert numpy types to Python native types for JSON serialization"""
+    if isinstance(obj, dict):
+        return {k: convert_to_serializable(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [convert_to_serializable(v) for v in obj]
+    elif isinstance(obj, (np.floating, np.float32, np.float64)):
+        return float(obj)
+    elif isinstance(obj, (np.integer, np.int32, np.int64)):
+        return int(obj)
+    return obj
+
 def full_evaluation(model, test_loader, scaler_Y, method_name="ST-PINN"):
     """Evaluate model on test set with denormalization and metrics"""
     print(f"\n{'='*60}")
@@ -46,8 +58,12 @@ def full_evaluation(model, test_loader, scaler_Y, method_name="ST-PINN"):
             print(f"  {species}: R²={m['R2']:.4f}, RMSE={m['RMSE']:.4f}")
     
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
+    
+    # Convert to JSON serializable format
+    metrics_serializable = convert_to_serializable(metrics)
+    
     with open(f"{config.RESULTS_DIR}/{method_name}_metrics.json", 'w') as f:
-        json.dump(metrics, f, indent=2)
+        json.dump(metrics_serializable, f, indent=2)
     
     print(f"\nResults saved to {config.RESULTS_DIR}/")
     

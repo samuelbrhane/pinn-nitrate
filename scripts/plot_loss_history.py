@@ -9,10 +9,11 @@ import config
 
 sns.set_style('whitegrid')
 
-def plot_transport_loss(loss_file='results/transport_loss.json'):
+def plot_transport_loss():
     """Plot transport (Stage 1) loss convergence"""
+    loss_file = f"{config.RESULTS_DIR}/transport_loss.json"
     if not os.path.exists(loss_file):
-        print(f"✗ {loss_file} not found")
+        print(f"transport_loss.json not found, skipping")
         return
     
     with open(loss_file, 'r') as f:
@@ -31,14 +32,17 @@ def plot_transport_loss(loss_file='results/transport_loss.json'):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig('plots/transport_convergence.png', dpi=300, bbox_inches='tight')
-    print("Saved: plots/transport_convergence.png")
+    
+    os.makedirs(config.PLOTS_DIR, exist_ok=True)
+    plt.savefig(f"{config.PLOTS_DIR}/transport_convergence.png", dpi=300, bbox_inches='tight')
+    print(f"Saved: {config.PLOTS_DIR}/transport_convergence.png")
     plt.close()
 
-def plot_reaction_loss(loss_file='results/reaction_loss.json'):
+def plot_reaction_loss():
     """Plot reaction (Stage 2) loss convergence"""
+    loss_file = f"{config.RESULTS_DIR}/reaction_loss.json"
     if not os.path.exists(loss_file):
-        print(f"✗ {loss_file} not found")
+        print(f"reaction_loss.json not found, skipping")
         return
     
     with open(loss_file, 'r') as f:
@@ -57,14 +61,17 @@ def plot_reaction_loss(loss_file='results/reaction_loss.json'):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig('plots/reaction_convergence.png', dpi=300, bbox_inches='tight')
-    print("Saved: plots/reaction_convergence.png")
+    
+    os.makedirs(config.PLOTS_DIR, exist_ok=True)
+    plt.savefig(f"{config.PLOTS_DIR}/reaction_convergence.png", dpi=300, bbox_inches='tight')
+    print(f"Saved: {config.PLOTS_DIR}/reaction_convergence.png")
     plt.close()
 
-def plot_finetune_loss(loss_file='results/finetune_loss.json'):
+def plot_finetune_loss():
     """Plot fine-tune (Stage 3) loss convergence"""
+    loss_file = f"{config.RESULTS_DIR}/finetune_loss.json"
     if not os.path.exists(loss_file):
-        print(f"{loss_file} not found")
+        print(f"finetune_loss.json not found, skipping")
         return
     
     with open(loss_file, 'r') as f:
@@ -83,8 +90,10 @@ def plot_finetune_loss(loss_file='results/finetune_loss.json'):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig('plots/finetune_convergence.png', dpi=300, bbox_inches='tight')
-    print("Saved: plots/finetune_convergence.png")
+    
+    os.makedirs(config.PLOTS_DIR, exist_ok=True)
+    plt.savefig(f"{config.PLOTS_DIR}/finetune_convergence.png", dpi=300, bbox_inches='tight')
+    print(f"Saved: {config.PLOTS_DIR}/finetune_convergence.png")
     plt.close()
 
 def plot_all_stages():
@@ -92,9 +101,9 @@ def plot_all_stages():
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
     
     stages = [
-        ('results/transport_loss.json', 'Transport', axes[0]),
-        ('results/reaction_loss.json', 'Reaction', axes[1]),
-        ('results/finetune_loss.json', 'Fine-tune', axes[2])
+        (f"{config.RESULTS_DIR}/transport_loss.json", 'Transport', axes[0]),
+        (f"{config.RESULTS_DIR}/reaction_loss.json", 'Reaction', axes[1]),
+        (f"{config.RESULTS_DIR}/finetune_loss.json", 'Fine-tune', axes[2])
     ]
     
     for loss_file, stage_name, ax in stages:
@@ -118,12 +127,13 @@ def plot_all_stages():
         ax.grid(True)
     
     plt.tight_layout()
-    plt.savefig('plots/all_stages_convergence.png', dpi=300, bbox_inches='tight')
-    print("Saved: plots/all_stages_convergence.png")
+    os.makedirs(config.PLOTS_DIR, exist_ok=True)
+    plt.savefig(f"{config.PLOTS_DIR}/all_stages_convergence.png", dpi=300, bbox_inches='tight')
+    print(f"Saved: {config.PLOTS_DIR}/all_stages_convergence.png")
     plt.close()
 
 if __name__ == "__main__":
-    os.makedirs('plots', exist_ok=True)
+    os.makedirs(config.PLOTS_DIR, exist_ok=True)
     
     print(f"\nPlotting loss history for benchmark {config.BENCHMARK}...\n")
     
@@ -132,4 +142,4 @@ if __name__ == "__main__":
     plot_finetune_loss()
     plot_all_stages()
     
-    print(f"\nAll loss plots saved to plots/")
+    print(f"\nAll loss plots saved to {config.PLOTS_DIR}/")

@@ -9,15 +9,12 @@ import json
 import time
 
 def train_finetune(model, train_loader, val_loader, loss_fn, epochs=2000):
-    """Fine-tune Training: PDE computed once per epoch"""
+    """Fine-tune Training: All layers trainable at full learning rate"""
     print(f"\n{'='*60}")
     print(f"Fine-tune Training (2k epochs, PDE per epoch)")
     print(f"{'='*60}\n")
     
     start_time = time.time()
-    
-    for param in model.parameters():
-        param.requires_grad = True
     
     optimizer = optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
     start_epoch = 0
