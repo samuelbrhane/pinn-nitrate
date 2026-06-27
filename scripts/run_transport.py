@@ -6,7 +6,7 @@ import torch
 import config
 from models.network import PINN
 from utils.data_loader import DataHandler
-from utils.losses import PINNLoss
+from utils.losses import MultiSpeciesPINNLoss
 from training.transport import train_transport
 
 
@@ -24,10 +24,10 @@ if __name__ == "__main__":
         num_layers=config.NUM_LAYERS
     ).to(config.DEVICE)
     
-    print(f"Model created")
+    print(f"Model created with INPUT_DIM={config.INPUT_DIM}, OUTPUT_DIM={config.OUTPUT_DIM}")
     
-    loss_fn = PINNLoss(model, config.DEVICE, stage='transport')
-    model = train_transport(model, train_loader, val_loader, loss_fn, epochs=config.EPOCHS_STAGE1)
+    # train_transport creates loss_fn internally, don't pass it
+    model = train_transport(model, train_loader, val_loader, epochs=config.EPOCHS_STAGE1)
     
     os.makedirs(config.MODEL_DIR, exist_ok=True)
     torch.save(model.state_dict(), f"{config.MODEL_DIR}/transport_final.pt")
