@@ -1,0 +1,8 @@
+{
+  "stage": "transport",
+  "epochs_trained": 5000,
+  "best_val_loss": 3.199342972948216e-05,
+  "time_seconds": 9659.077248096466,
+  "time_minutes": 160.98462080160778,
+  "time_hours": 2.6830770133601294
+}

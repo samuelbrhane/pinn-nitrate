@@ -1,4 +1,12 @@
 import torch
+import random
+import numpy as np
+
+# Random Seeds for Reproducibility
+SEED = 42
+torch.manual_seed(SEED)
+np.random.seed(SEED)
+random.seed(SEED)
 
 # Device
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
