@@ -26,7 +26,7 @@ if __name__ == "__main__":
     
     print(f"Model created")
     
-    loss_fn = PINNLoss(model, config.DEVICE)
+    loss_fn = PINNLoss(model, config.DEVICE, stage='transport')
     model = train_transport(model, train_loader, val_loader, loss_fn, epochs=config.EPOCHS_STAGE1)
     
     os.makedirs(config.MODEL_DIR, exist_ok=True)

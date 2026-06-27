@@ -131,6 +131,6 @@ if __name__ == "__main__":
     
     print(f"Model created")
     
-    loss_fn = PINNLoss(model, config.DEVICE)
+    loss_fn = PINNLoss(model, config.DEVICE, stage='baseline')
     
     model = train_baseline(model, train_loader, val_loader, loss_fn, epochs=10000)

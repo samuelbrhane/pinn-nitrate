@@ -2,13 +2,18 @@ import torch
 import torch.nn as nn
 
 class DynamicLossWeighting:
-    def __init__(self):
-        self.weights = {
-            'data': 10.0,    # Prioritize data fitting
-            'pde': 0.1,      # Light PDE constraint
-            'ic': 1.0,
-            'bc': 1.0
-        }
+    def __init__(self, stage='transport'):
+        # Stage-specific initial weights
+        if stage == 'transport':
+            self.weights = {'data': 10.0, 'pde': 0.1, 'ic': 1.0, 'bc': 1.0}
+        elif stage == 'reaction':
+            self.weights = {'data': 10.0, 'pde': 1.0, 'ic': 1.0, 'bc': 1.0}
+        elif stage == 'finetune':
+            self.weights = {'data': 10.0, 'pde': 1.0, 'ic': 1.0, 'bc': 1.0}
+        elif stage == 'baseline':
+            self.weights = {'data': 5.0, 'pde': 1.0, 'ic': 1.0, 'bc': 1.0}
+        else:
+            self.weights = {'data': 1.0, 'pde': 1.0, 'ic': 1.0, 'bc': 1.0}
     
     def update_weights(self, epoch, loss_dict):
         """Dynamically adjust weights every 100 epochs to balance loss components"""
@@ -24,9 +29,9 @@ class DynamicLossWeighting:
                 self.weights[key] = (self.weights[key] / total) * 4.0
 
 class PINNLoss(nn.Module):
-    def __init__(self, model, device):
+    def __init__(self, model, device, stage='transport'):
         super().__init__()
-        self.dlw = DynamicLossWeighting()
+        self.dlw = DynamicLossWeighting(stage)
         self.mse = nn.MSELoss()
         self.model = model
         self.device = device
