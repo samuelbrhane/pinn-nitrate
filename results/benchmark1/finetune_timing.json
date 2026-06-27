@@ -1,7 +1,0 @@
-{
-  "stage": "finetune",
-  "epochs_trained": 2000,
-  "time_seconds": 2009.008731842041,
-  "time_minutes": 33.48347886403402,
-  "time_hours": 0.5580579810672336
-}

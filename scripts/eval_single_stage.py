@@ -11,7 +11,6 @@ import json
 import numpy as np
 
 def convert_to_serializable(obj):
-    """Convert numpy types to Python native types for JSON serialization"""
     if isinstance(obj, dict):
         return {k: convert_to_serializable(v) for k, v in obj.items()}
     elif isinstance(obj, list):
@@ -22,10 +21,10 @@ def convert_to_serializable(obj):
         return int(obj)
     return obj
 
-def full_evaluation(model, test_loader, scaler_Y, method_name="ST-PINN"):
-    """Evaluate model on test set with denormalization and metrics"""
+def evaluate_stage(model, test_loader, scaler_Y, stage_name):
+    """Evaluate model on test set"""
     print(f"\n{'='*60}")
-    print(f"EVALUATION: {method_name}")
+    print(f"EVALUATION: {stage_name.upper()}")
     print(f"{'='*60}\n")
     
     model.eval()
@@ -59,24 +58,40 @@ def full_evaluation(model, test_loader, scaler_Y, method_name="ST-PINN"):
     
     os.makedirs(config.RESULTS_DIR, exist_ok=True)
     
-    # Convert to JSON serializable format
     metrics_serializable = convert_to_serializable(metrics)
     
-    with open(f"{config.RESULTS_DIR}/{method_name}_metrics.json", 'w') as f:
+    with open(f"{config.RESULTS_DIR}/{stage_name}_metrics.json", 'w') as f:
         json.dump(metrics_serializable, f, indent=2)
     
-    print(f"Results saved to {config.RESULTS_DIR}/")
+    print(f"\nMetrics saved to {config.RESULTS_DIR}/{stage_name}_metrics.json")
     
     return metrics
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python eval_single_stage.py [stage]")
+        print("Stages: transport, reaction, finetune, baseline")
+        sys.exit(1)
+    
+    stage = sys.argv[1].lower()
+    valid_stages = ['transport', 'reaction', 'finetune', 'baseline']
+    
+    if stage not in valid_stages:
+        print(f"Invalid stage: {stage}")
+        print(f"Valid stages: {', '.join(valid_stages)}")
+        sys.exit(1)
+    
+    model_file = f"{config.MODEL_DIR}/{stage}_final.pt"
+    if not os.path.exists(model_file):
+        print(f"Model file not found: {model_file}")
+        sys.exit(1)
+    
     print(f"Device: {config.DEVICE}")
     print(f"Benchmark: {config.BENCHMARK}")
     
     dh = DataHandler(config.BENCHMARK)
     train_loader, val_loader, test_loader, scaler_X, scaler_Y = dh.create_dataloaders()
     
-    # Evaluate ST-PINN (Sequential Training)
     model = PINN(
         input_dim=config.INPUT_DIM,
         output_dim=config.OUTPUT_DIM,
@@ -84,18 +99,7 @@ if __name__ == "__main__":
         num_layers=config.NUM_LAYERS
     ).to(config.DEVICE)
     
-    model.load_state_dict(torch.load(f"{config.MODEL_DIR}/finetune_final.pt"))
-    print(f"Loaded ST-PINN final model")
-    metrics_stpinn = full_evaluation(model, test_loader, scaler_Y, method_name="ST-PINN")
+    model.load_state_dict(torch.load(model_file))
+    print(f"Loaded {stage} model\n")
     
-    # Evaluate Baseline (Standard PINN)
-    model = PINN(
-        input_dim=config.INPUT_DIM,
-        output_dim=config.OUTPUT_DIM,
-        hidden_dim=config.HIDDEN_DIM,
-        num_layers=config.NUM_LAYERS
-    ).to(config.DEVICE)
-    
-    model.load_state_dict(torch.load(f"{config.MODEL_DIR}/baseline_final.pt"))
-    print(f"Loaded Baseline final model")
-    metrics_baseline = full_evaluation(model, test_loader, scaler_Y, method_name="Baseline")
+    metrics = evaluate_stage(model, test_loader, scaler_Y, stage)

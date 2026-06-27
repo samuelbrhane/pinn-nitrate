@@ -4,8 +4,8 @@ import torch.nn as nn
 class DynamicLossWeighting:
     def __init__(self):
         self.weights = {
-            'data': 1.0,
-            'pde': 1.0,
+            'data': 10.0,    # Prioritize data fitting
+            'pde': 0.1,      # Light PDE constraint
             'ic': 1.0,
             'bc': 1.0
         }
