@@ -9,9 +9,15 @@ from utils.losses import MultiSpeciesPINNLoss
 import json
 import time
 from tqdm import tqdm
+import random
+import numpy as np
 
 
 def train_transport(model, train_loader, val_loader, epochs=None):
+    torch.manual_seed(config.SEED)
+    np.random.seed(config.SEED)
+    random.seed(config.SEED)
+    
     if epochs is None:
         epochs = config.EPOCHS_STAGE1
     
