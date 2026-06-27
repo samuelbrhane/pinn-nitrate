@@ -1,6 +1,12 @@
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import torch
 import torch.nn as nn
 import numpy as np
+import config
+
 
 class DynamicLossWeighting:
     def __init__(self, stage='transport'):
@@ -16,7 +22,7 @@ class DynamicLossWeighting:
         self.initial_weights = self.weights.copy()
     
     def update_weights(self, epoch, loss_dict):
-        if epoch % 500 == 0 and epoch > 0:
+        if epoch % config.LOSS_WEIGHT_UPDATE_FREQ == 0 and epoch > 0:
             losses = [max(loss_dict.get(key, 0.0), 1e-8) for key in self.weights]
             max_loss = max(losses)
             
@@ -51,10 +57,10 @@ class MultiSpeciesPINNLoss(nn.Module):
         self.u = u
         
         self.stoich = {
-            'NO3': 1.0,
-            'DOC': 0.5,
-            'Fe2': 0.5,
-            'N2': 0.5
+            'NO3': config.STOICH_NO3,
+            'DOC': config.STOICH_DOC,
+            'Fe2': config.STOICH_FE2,
+            'N2': config.STOICH_N2
         }
         
         self.species_indices = {
